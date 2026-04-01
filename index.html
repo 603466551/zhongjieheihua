@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>二手房约谈助手</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <h1>西安二手房约谈助手</h1>
+      <p>实时监听中介话术，识别意图并给出可直接说出口的应答建议</p>
+    </header>
+
+    <main class="grid">
+      <section class="panel">
+        <h2>价格边界设置</h2>
+        <div class="form-grid">
+          <label for="startPrice">起始报价（万元）</label>
+          <input id="startPrice" type="number" min="0" step="0.1" placeholder="如 200" />
+
+          <label for="maxPrice">最高可接受价（万元）</label>
+          <input id="maxPrice" type="number" min="0" step="0.1" placeholder="如 220" />
+        </div>
+        <div class="inline">
+          <button id="saveConfigBtn" type="button">保存边界</button>
+          <span id="configStatus" class="hint">未设置</span>
+        </div>
+        <div class="note">
+          当前我方报价：<strong id="currentOffer">-</strong> 万元
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>实时输入</h2>
+        <div class="inline">
+          <label for="speakerSelect">当前发言方</label>
+          <select id="speakerSelect">
+            <option value="broker">中介/业主方</option>
+            <option value="buyer">我方</option>
+          </select>
+        </div>
+        <div class="inline">
+          <button id="startListenBtn" type="button">开始监听</button>
+          <button id="stopListenBtn" type="button" disabled>停止监听</button>
+          <span id="micStatus" class="hint">麦克风未启动</span>
+        </div>
+        <p id="interimText" class="interim">实时识别文本会显示在这里</p>
+        <textarea id="manualText" rows="3" placeholder="如果语音识别不稳定，可手动贴入一句对话"></textarea>
+        <div class="inline">
+          <button id="sendManualBtn" type="button">提交当前句</button>
+          <button id="clearHistoryBtn" type="button" class="ghost">清空记录</button>
+        </div>
+      </section>
+
+      <section class="panel wide">
+        <h2>对话记录</h2>
+        <ul id="transcriptList" class="transcript-list"></ul>
+      </section>
+
+      <section class="panel">
+        <h2>话术识别</h2>
+        <div id="riskLevel" class="risk">风险级别：-</div>
+        <div class="block">
+          <h3>识别到的策略</h3>
+          <ul id="tacticsList"></ul>
+        </div>
+        <div class="block">
+          <h3>核心意图</h3>
+          <p id="intentText">等待中介发言...</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>建议回答</h2>
+        <div class="block">
+          <h3>可直接说</h3>
+          <ol id="responseList"></ol>
+        </div>
+        <div class="block">
+          <h3>下一口价建议</h3>
+          <p id="nextOfferText">暂无建议</p>
+          <button id="applyOfferBtn" type="button" disabled>采用建议价为当前报价</button>
+        </div>
+        <div class="block">
+          <h3>建议依据</h3>
+          <p id="reasonText">等待中介发言...</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
