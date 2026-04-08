@@ -3,90 +3,178 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>二手房约谈助手</title>
+  <title>二手房约谈耳目助手</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div class="page">
     <header class="hero">
-      <h1>西安二手房约谈助手</h1>
-      <p>实时监听中介话术，识别意图并给出可直接说出口的应答建议</p>
+      <h1>二手房约谈耳目助手</h1>
+      <p>核心能力：翻译中介潜台词 + 给出可直接说出口的应答话术</p>
     </header>
 
-    <main class="grid">
-      <section class="panel">
-        <h2>价格边界设置</h2>
-        <div class="form-grid">
-          <label for="startPrice">起始报价（万元）</label>
-          <input id="startPrice" type="number" min="0" step="0.1" placeholder="如 200" />
+    <nav class="tabbar" aria-label="页面切换">
+      <button id="showAssistantBtn" class="tab active" type="button">约谈助手</button>
+      <button id="showSettingsBtn" class="tab" type="button">配置中心</button>
+    </nav>
 
-          <label for="maxPrice">最高可接受价（万元）</label>
-          <input id="maxPrice" type="number" min="0" step="0.1" placeholder="如 220" />
-        </div>
-        <div class="inline">
-          <button id="saveConfigBtn" type="button">保存边界</button>
-          <span id="configStatus" class="hint">未设置</span>
-        </div>
-        <div class="note">
-          当前我方报价：<strong id="currentOffer">-</strong> 万元
-        </div>
+    <main id="assistantView" class="view active">
+      <section class="grid">
+        <article class="panel">
+          <h2>价格边界</h2>
+          <div class="form-grid">
+            <label for="startPrice">起始报价（万元）</label>
+            <input id="startPrice" type="number" min="0" step="0.1" placeholder="如 205" />
+
+            <label for="maxPrice">最高可接受价（万元）</label>
+            <input id="maxPrice" type="number" min="0" step="0.1" placeholder="如 220" />
+          </div>
+          <div class="inline">
+            <button id="saveBoundaryBtn" type="button">保存边界</button>
+            <span id="boundaryStatus" class="hint">未设置</span>
+          </div>
+          <div class="note">当前我方报价：<strong id="currentOffer">-</strong> 万元</div>
+        </article>
+
+        <article class="panel">
+          <h2>实时输入</h2>
+          <div class="inline">
+            <label for="speakerSelect">当前发言方</label>
+            <select id="speakerSelect">
+              <option value="broker">中介/卖方</option>
+              <option value="buyer">我方</option>
+            </select>
+          </div>
+          <div class="inline">
+            <button id="startListenBtn" type="button">开始监听</button>
+            <button id="stopListenBtn" type="button" disabled>停止监听</button>
+          </div>
+          <p id="micStatus" class="hint">麦克风未启动</p>
+          <p id="engineStatus" class="hint">当前语音引擎：自动</p>
+          <p id="interimText" class="interim">实时识别文本会显示在这里</p>
+
+          <textarea id="manualText" rows="3" placeholder="语音不稳定时，手动粘贴一句对话"></textarea>
+          <div class="inline">
+            <button id="sendManualBtn" type="button">提交当前句</button>
+            <button id="clearHistoryBtn" class="ghost" type="button">清空记录</button>
+          </div>
+        </article>
+
+        <article class="panel">
+          <h2>翻译大白话</h2>
+          <div class="block">
+            <h3>中介原话（最新）</h3>
+            <p id="latestBrokerText">等待中介发言...</p>
+          </div>
+          <div class="block">
+            <h3>翻译结果</h3>
+            <ul id="plainTalkList"></ul>
+          </div>
+          <div class="block">
+            <h3>潜台词/目的</h3>
+            <p id="hiddenIntentText">等待分析...</p>
+          </div>
+          <div class="block">
+            <h3>优先核验问题</h3>
+            <ul id="verifyList"></ul>
+          </div>
+          <div id="riskLevel" class="risk">风险级别：-</div>
+        </article>
+
+        <article class="panel">
+          <h2>对应话术</h2>
+          <div class="block">
+            <h3>你们可以直接说</h3>
+            <ol id="responseList"></ol>
+          </div>
+          <div class="block">
+            <h3>下一口价建议</h3>
+            <p id="nextOfferText">暂无建议</p>
+            <button id="applyOfferBtn" type="button" disabled>采用建议价为当前报价</button>
+          </div>
+          <div class="block">
+            <h3>建议依据</h3>
+            <p id="reasonText">等待分析...</p>
+          </div>
+          <div class="block">
+            <h3>分析来源</h3>
+            <p id="analysisSourceText">本地规则引擎</p>
+          </div>
+        </article>
+
+        <article class="panel wide">
+          <h2>对话记录</h2>
+          <ul id="transcriptList" class="transcript-list"></ul>
+        </article>
       </section>
+    </main>
 
-      <section class="panel">
-        <h2>实时输入</h2>
-        <div class="inline">
-          <label for="speakerSelect">当前发言方</label>
-          <select id="speakerSelect">
-            <option value="broker">中介/业主方</option>
-            <option value="buyer">我方</option>
-          </select>
-        </div>
-        <div class="inline">
-          <button id="startListenBtn" type="button">开始监听</button>
-          <button id="stopListenBtn" type="button" disabled>停止监听</button>
-          <span id="micStatus" class="hint">麦克风未启动</span>
-        </div>
-        <p id="interimText" class="interim">实时识别文本会显示在这里</p>
-        <textarea id="manualText" rows="3" placeholder="如果语音识别不稳定，可手动贴入一句对话"></textarea>
-        <div class="inline">
-          <button id="sendManualBtn" type="button">提交当前句</button>
-          <button id="clearHistoryBtn" type="button" class="ghost">清空记录</button>
-        </div>
-      </section>
+    <main id="settingsView" class="view">
+      <section class="settings-grid">
+        <article class="panel">
+          <h2>基础模式（默认可用）</h2>
+          <ul>
+            <li>不配置任何模型也可运行：本地规则识别 + 应答建议</li>
+            <li>可用手动输入对话，适合任何手机浏览器</li>
+            <li>语音监听默认优先使用浏览器原生语音能力</li>
+          </ul>
+        </article>
 
-      <section class="panel wide">
-        <h2>对话记录</h2>
-        <ul id="transcriptList" class="transcript-list"></ul>
-      </section>
+        <article class="panel">
+          <h2>语音配置</h2>
+          <div class="form-grid single">
+            <label for="speechEngine">语音引擎</label>
+            <select id="speechEngine">
+              <option value="auto">自动（优先浏览器语音，失败再看模型）</option>
+              <option value="browser">仅浏览器语音识别</option>
+              <option value="model">仅模型语音转写</option>
+              <option value="manual">仅手动输入</option>
+            </select>
 
-      <section class="panel">
-        <h2>话术识别</h2>
-        <div id="riskLevel" class="risk">风险级别：-</div>
-        <div class="block">
-          <h3>识别到的策略</h3>
-          <ul id="tacticsList"></ul>
-        </div>
-        <div class="block">
-          <h3>核心意图</h3>
-          <p id="intentText">等待中介发言...</p>
-        </div>
-      </section>
+            <label for="speechLanguage">语音语言代码</label>
+            <input id="speechLanguage" type="text" placeholder="如 zh 或 zh-CN" />
+          </div>
+        </article>
 
-      <section class="panel">
-        <h2>建议回答</h2>
-        <div class="block">
-          <h3>可直接说</h3>
-          <ol id="responseList"></ol>
-        </div>
-        <div class="block">
-          <h3>下一口价建议</h3>
-          <p id="nextOfferText">暂无建议</p>
-          <button id="applyOfferBtn" type="button" disabled>采用建议价为当前报价</button>
-        </div>
-        <div class="block">
-          <h3>建议依据</h3>
-          <p id="reasonText">等待中介发言...</p>
-        </div>
+        <article class="panel">
+          <h2>模型增强配置（可选）</h2>
+          <div class="inline">
+            <input id="enableModelAnalysis" type="checkbox" />
+            <label for="enableModelAnalysis">启用模型话术分析（潜台词 + 应答）</label>
+          </div>
+          <div class="form-grid single">
+            <label for="apiBase">模型 API Base URL</label>
+            <input id="apiBase" type="text" placeholder="如 https://api.openai.com/v1" />
+
+            <label for="apiKey">API Key（仅存本机浏览器）</label>
+            <input id="apiKey" type="password" placeholder="sk-..." />
+
+            <label for="speechModel">语音模型名（用于音频转写）</label>
+            <input id="speechModel" type="text" placeholder="如 gpt-4o-mini-transcribe" />
+
+            <label for="analysisModel">语言模型名（用于潜台词分析）</label>
+            <input id="analysisModel" type="text" placeholder="如 gpt-4.1-mini" />
+          </div>
+        </article>
+
+        <article class="panel wide">
+          <h2>给模型的场景说明（建议保留）</h2>
+          <textarea id="scenarioPrompt" rows="8"></textarea>
+          <p class="hint">
+            说明：你问得很对，模型调用前最好先说明场景。这里就是“预置上下文”，会在每次分析时发送给模型。
+          </p>
+        </article>
+
+        <article class="panel wide">
+          <div class="inline">
+            <button id="saveModelConfigBtn" type="button">保存配置</button>
+            <button id="resetPromptBtn" class="ghost" type="button">恢复默认场景说明</button>
+            <span id="modelConfigStatus" class="hint">未保存</span>
+          </div>
+          <p class="hint">
+            手机麦克风前提：请使用 HTTPS 页面（Cloudflare Pages 默认满足）并允许麦克风权限。
+          </p>
+        </article>
       </section>
     </main>
   </div>
